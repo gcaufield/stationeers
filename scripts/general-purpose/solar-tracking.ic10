@@ -1,0 +1,17 @@
+alias SolarSensor d0
+
+push -539224550 # Solar Panel (Dual)
+push -1545574413 # Solar Panel (Heavy Dual)
+
+start:
+yield
+l r14 SolarSensor Vertical
+l r13 SolarSensor Horizontal
+sub r13 90 r13
+
+move sp 2
+pop r12
+sb r12 Vertical r14
+sb r12 Horizontal r13
+brnez sp -3
+j start

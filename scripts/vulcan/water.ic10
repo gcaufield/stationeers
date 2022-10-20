@@ -1,0 +1,30 @@
+alias OxyPump d0
+alias Analyzer d1
+alias Combuster d2
+alias VolFilter d3
+alias LiquidAnalyzer d4
+
+define MaxGasPressure 1000
+define MaxOxygen 0.02
+define MaxWaterPressure 100
+
+s Combuster On 1
+s Combuster Mode 1
+s VolFilter On 1
+s VolFilter Mode 0
+s OxyPump On 0
+s OxyPump Setting 1
+
+start:
+yield
+l r12 LiquidAnalyzer Pressure
+slt r12 r12 MaxWaterPressure
+l r14 Analyzer Pressure
+slt r14 r14 MaxGasPressure
+and r14 r14 r12
+l r13 Analyzer RatioOxygen
+slt r13 r13 MaxOxygen
+and r13 r13 r12
+s VolFilter Mode r14
+s OxyPump On r13
+j start

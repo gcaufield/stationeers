@@ -1,0 +1,34 @@
+alias Vent d0
+alias Tank d1
+alias Sensor d2
+
+define MinTankPressure 1000
+define MaxTankPressure 4000
+define MaxDelta 10
+
+s Vent On 0
+s Vent Mode 0
+
+start:
+
+l r14 Tank Temperature
+l r13 Sensor Temperature
+l r12 Tank Pressure
+
+brgt r14 r13 3
+s Vent On 0 # Tank is Colder than outside, let it sit
+j start
+
+sub r14 r14 MaxDelta # Remove the Maximum Delta From the current Tank Temp
+
+slt r14 r14 r13 
+sgt r12 r12 MinTankPressure
+and r14 r14 r12 # Outside is colder and we are above Min pressure we should dump gas
+breqz r9 4
+s Vent Mode 1
+s Vent On 1
+j start
+slt r11 r12 MaxTankPressure # Otherwise just pull gas until we hit the max pressure
+s Vent Mode 0
+s Vent On r11
+j start
