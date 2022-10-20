@@ -25,10 +25,10 @@ slt r14 r14 r13
 sgt r12 r12 MinTankPressure
 and r14 r14 r12 # Outside is colder and we are above Min pressure we should dump gas
 breqz r9 4
-s Vent Mode 1
+s Vent Mode 0
 s Vent On 1
 j start
 slt r11 r12 MaxTankPressure # Otherwise just pull gas until we hit the max pressure
-s Vent Mode 0
+s Vent Mode 1
 s Vent On r11
 j start
