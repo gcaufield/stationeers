@@ -1,0 +1,12 @@
+alias Mixer d0
+alias Tank d1
+
+div r1 1.0 3.0
+
+start:
+yield
+s Mixer Setting r1
+l r0 Tank Pressure
+slt r0 r0 3000
+s Mixer On r0
+j start

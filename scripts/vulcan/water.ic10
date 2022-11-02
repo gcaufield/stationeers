@@ -5,7 +5,7 @@ alias VolFilter d3
 alias LiquidAnalyzer d4
 
 define MaxGasPressure 1000
-define MaxOxygen 0.02
+define MaxOxygen 0.01
 define MaxWaterPressure 100
 
 s Combuster On 1

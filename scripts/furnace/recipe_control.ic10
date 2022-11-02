@@ -1,0 +1,26 @@
+alias Dial d0
+alias Button d1
+alias FurnaceController d2
+
+define LOOKUP       75
+define ELEMENT_SIZE 5
+
+s Dial Mode 15
+move sp LOOKUP
+
+start:
+yield
+l r0 Dial Setting
+beqz r0 start
+sub r0 r0 1
+mul r0 r0 ELEMENT_SIZE
+add r0 r0 4
+sub sp LOOKUP r0
+pop r0
+s db Setting r0
+l r1 FurnaceController Setting
+bnez r1 start
+l r1 Button Activate
+beqz r1 start
+s FurnaceController Setting r0
+j start

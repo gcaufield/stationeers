@@ -1,0 +1,75 @@
+push 156348098   # Waspaloy
+push 400         # Min Temp
+push 800         # Max Temp
+push 50000       # Min Pressure
+push 55000       # Max Pressure
+push -1897868623 # Stellite
+push 1800        # Min Temp
+push 100000      # Max Temp
+push 10000       # Min Pressure
+push 20000       # Max Pressure
+push -787796599  # Inconel
+push 600         # Min Temp
+push 100000      # Max Temp
+push 23500       # Min Pressure
+push 24000       # Max Pressure
+push 1579842814  # Hastelloy
+push 950         # Min Temp
+push 1000        # Max Temp
+push 25000       # Min Pressure
+push 30000       # Max Pressure
+push 412924554   # Astroloy
+push 1000        # Min Temp
+push 100000      # Max Temp
+push 30000       # Min Pressure
+push 40000       # Max Pressure
+push -82508479   # Solder
+push 350         # Min Temp
+push 550         # Max Temp
+push 1000        # Min Pressure
+push 55000       # Max Pressure
+push 1058547521  # Constantan
+push 1000        # Min Temp
+push 10000       # Max Temp
+push 20000       # Min Pressure
+push 55000       # Max Pressure
+push 1058547521  # Invar
+push 1200        # Min Temp
+push 1500        # Max Temp
+push 18000       # Min Pressure
+push 20000       # Max Pressure
+push 502280180   # Electrum
+push 600         # Min Temp
+push 10000       # Max Temp
+push 800         # Min Pressure
+push 2400        # Max Pressure
+push -654790771  # Steel
+push 900         # Min Temp
+push 100000      # Max Temp
+push 1000        # Min Pressure
+push 55000       # Max Pressure
+push -929742000  # Silver
+push 600         # Min Temp
+push 100000      # Max Temp
+push 100         # Min Pressure
+push 55000       # Max Pressure
+push -290196476  # Silicon
+push 900         # Min Temp
+push 100000      # Max Temp
+push 100         # Min Pressure
+push 55000       # Max Pressure
+push -404336834  # Copper
+push 600         # Min Temp
+push 100000      # Max Temp
+push 100         # Min Pressure
+push 55000       # Max Pressure
+push 226410516   # Gold
+push 600         # Min Temp
+push 100000      # Max Temp
+push 100         # Min Pressure
+push 55000       # Max Pressure
+push -1301215609 # Iron
+push 800         # Min Temp
+push 100000      # Max Temp
+push 100         # Min Pressure
+push 55000       # Max Pressure

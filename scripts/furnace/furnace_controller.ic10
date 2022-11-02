@@ -1,0 +1,102 @@
+alias Tank d0
+alias TankPump d1
+alias FuelPump d2
+alias CoolantPump d3
+alias Furnace d4
+
+define LOOKUP       75
+define ELEMENT_SIZE 5
+
+alias MaxPress r14
+alias MinPress r13
+alias MaxTemp  r12
+alias MinTemp  r11
+alias State    r10
+
+define STATE_IDLE 0
+define STATE_RUNNING 1 
+
+s Furnace SettingInput 100
+s Furnace SettingOutput 0
+
+s db Setting 0
+s TankPump On 1
+s FuelPump On 1
+s CoolantPump On 1
+s TankPump Setting 0
+s FuelPump Setting 0
+s CoolantPump Setting 0
+
+move sp LOOKUP
+move State STATE_IDLE
+
+start:
+yield
+s Furnace Open 0
+l r0 db Setting
+beqz r0 idle
+beq State STATE_RUNNING run
+
+move sp LOOKUP
+beq sp 0 start
+pop MaxPress
+pop MinPress
+pop MaxTemp
+pop MinTemp
+pop r1
+brne r0 r1 -6
+move State STATE_RUNNING
+
+run:
+l r0 Furnace Pressure
+l r1 Furnace Temperature
+
+# Check if we are over pressure.
+bgt r0 MaxPress dump
+s Furnace SettingOutput 0
+
+l r2 Tank Temperature
+l r3 Tank Pressure
+
+slt r6 r1 MinTemp # Under Temp Pump Fuel
+sgt r4 r2 MinTemp # Can we get heat from tank?
+select r5 r6 r4 0 # If we need heat and we can get it from the tank
+select r6 r5 0 r6 # Pump fuel if the heat cant come from the tank.
+
+slt r4 r0 MinPress # Under Pressure pump from tank
+select r5 r6 r5 r4 # Only pump from tank if we aren't trying to get heat from fuel
+
+sgt r7 r1 MaxTemp # Too hot pump coolant
+select r5 r7 0 r5 # Only pump from the tank if we aren't pumping coolant.
+
+mul r5 r5 30
+mul r6 r6 5
+mul r7 r7 10
+
+s TankPump Setting r5
+s FuelPump Setting r6
+s CoolantPump Setting r7
+s Furnace Activate 1
+
+l r0 Furnace RecipeHash
+l r1 db Setting
+bne r0 r1 start
+l r0 Furnace Reagents
+yield
+l r1 Furnace Reagents
+bne r0 r1 start
+s Furnace Open 1
+s db Setting 0
+move State STATE_IDLE
+j start
+
+dump:
+s TankPump Setting 0
+s FuelPump Setting 0
+s CoolantPump Setting 0
+s Furnace SettingOutput 30
+j start
+
+idle:
+s Furnace SettingOutput 100
+j start
