@@ -1,0 +1,50 @@
+alias Tank d0
+alias FuelPump d1
+alias Vent d2
+
+alias State r15
+alias TPress r14
+alias TTemp r13
+
+define STATE_TEMP 0
+define STATE_OVERPRESSURE 1
+
+define MAX_PRESSURE 50000
+define TARGET_PRESSURE 40000
+define MIN_TEMP 1300
+
+s FuelPump Setting 0
+s Vent Setting 0
+
+s FuelPump On 1
+s Vent On 1
+
+move State STATE_TEMP
+
+start:
+yield
+l TPress Tank Pressure
+l TTemp Tank Temperature
+
+beq State STATE_TEMP check_temp
+beq State STATE_OVERPRESSURE over_pressure
+hcf
+
+check_temp:
+brlt TTemp MAX_PRESSURE 4
+s FuelPump Setting 0
+move State STATE_OVERPRESSURE
+j start
+slt r0 TTemp MIN_TEMP 
+mul r0 r0 30
+s FuelPump Setting r0
+j start
+
+
+over_pressure:
+sgt r0 TPress TARGET_PRESSURE
+mul r0 r0 100
+s Vent Setting r0
+brnez r0 2
+move State STATE_TEMP
+j start

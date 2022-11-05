@@ -4,23 +4,26 @@ define VendingMachine -443130773
 define RequestList 12
 
 s Sorter Mode 2
+sb VendingMachine ClearMemory 1
 
 push 0
 brlt sp RequestList -1
 
 start:
-sleep 3
+yield
 l r0 RequestMem Setting
 
 beqz r0 check_sorter # No Pending Request
 beq r0 -1 check_sorter # Currently Pending an Ack
 sb VendingMachine RequestHash r0
-sleep 1
+sleep 2
 sb VendingMachine RequestHash 0
-yield
-s RequestMem Setting -1
+lb r1 VendingMachine ExportCount Sum
+sb VendingMachine ClearMemory 1
+seqz r1 r1 
+sub r1 -1 r1 # Set -2 if no export
+s RequestMem Setting r1
 move sp RequestList
-s db Setting 1
 loop1_start:
 pop r2
 brnez r2 3
@@ -29,7 +32,6 @@ j check_sorter
 bnez sp loop1_start
 
 check_sorter:
-s db Setting 2
 l r0 Sorter Output
 bne r0 -1 start # Sorter isn't ready for this
 ls r0 Sorter 0 OccupantHash
@@ -44,6 +46,5 @@ move r1 1
 j sort
 bnez sp loop2_start
 sort:
-s db Setting 3
 s Sorter Output r1
 j start

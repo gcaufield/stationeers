@@ -17,6 +17,7 @@ alias State    r9
 
 define STATE_IDLE 0
 define STATE_RUNNING 1 
+define STATE_COMPLETE 2
 
 s Furnace SettingInput 100
 s Furnace SettingOutput 0
@@ -34,10 +35,10 @@ move State STATE_IDLE
 
 start:
 yield
-s Furnace Open 0
 l r0 db Setting
 beqz r0 idle
 beq State STATE_RUNNING run
+beq State STATE_COMPLETE complete
 
 move sp LOOKUP
 beq sp 0 start
@@ -94,8 +95,7 @@ bne r0 r1 start
 l r0 Furnace Reagents
 blt r0 RCount start # Still Waiting for Reagents
 s Furnace Open 1
-s db Setting 0
-move State STATE_IDLE
+move State STATE_COMPLETE
 j start
 
 dump:
@@ -105,6 +105,15 @@ s CoolantPump Setting 0
 s Furnace SettingOutput 30
 j start
 
+complete:
+l r0 Furnace Reagents
+brnez r0 4
+s db Setting 0
+s Furnace Open 0
+move State STATE_IDLE
+j start
+
 idle:
+move State STATE_IDLE
 s Furnace SettingOutput 100
 j start

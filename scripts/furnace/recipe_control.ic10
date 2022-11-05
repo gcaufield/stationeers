@@ -3,28 +3,35 @@ alias Button d1
 alias FurnaceController d2
 alias CountDial d3
 alias RequestMem d4
+alias Sorter d5
 
 define LOOKUP       165
 define ELEMENT_SIZE 11
 define STATE_IDLE    0
 define STATE_REQUEST 1
 define STATE_WAIT    2
+define STATE_ABORT   3
 
 alias State r14
 alias CurrentIngot r13
 alias CurrentCount r12
 alias RequestIter r11
+alias RequestCount r10
 
 s Dial Mode 15
 move sp LOOKUP
 
+s Sorter Mode 2
 move State STATE_IDLE
 
 start:
 yield
 beq State STATE_IDLE idle
 beq State STATE_WAIT wait
+beq State STATE_ABORT abort
+
 idle:
+jal CheckSorter
 l r0 Dial Setting
 brnez r0 3
 s db Setting 0
@@ -41,6 +48,7 @@ s FurnaceController Setting r0
 l CurrentCount CountDial Setting
 move State STATE_REQUEST
 
+move RequestCount 0
 move RequestIter CurrentCount
 loop1_start:
 beqz RequestIter loop1_end
@@ -49,18 +57,44 @@ loop2_start:
 pop r0
 beqz r0 loop2_end
 jal MakeRequest
+beqz r0 endif1
+s FurnaceController Setting 0
+s Sorter ClearMemory 1
+move State STATE_ABORT
+j start
+endif1:
+add RequestCount RequestCount 1
 j loop2_start
 loop2_end:
 sub RequestIter RequestIter 1
 j loop1_start
 loop1_end:
+# We successfully requested everything open valve and wait.
 move State STATE_WAIT
+j start
 
 wait:
+jal CheckSorter
 l r1 FurnaceController Setting
 brnez r1 2
 move State STATE_IDLE
 j start
+
+abort:
+jal CheckSorter
+l r1 Sorter ExportCount
+brne r1 RequestCount 2 # Check if we have successfully returned everything we originally asked for
+move State STATE_IDLE
+j start
+
+CheckSorter:
+l r1 Sorter Output
+bne r1 -1 ra # Sorter isn't ready 
+ls r1 Sorter 0 Occupied
+beqz r1 ra # Nothing in the sorter
+seq r1 State STATE_WAIT # We only forward to the furnace in the Wait State.
+s Sorter Output r1
+j ra
 
 MakeRequest:
 l r1 RequestMem Setting
@@ -70,6 +104,7 @@ jr -3
 s RequestMem Setting r0
 yield
 l r1 RequestMem Setting # Wait for Ack from Warehouse
-brne r1 -1 -2
+breq r0 r1 -2
+sne r0 r1 -1 
 s RequestMem Setting 0
 j ra
