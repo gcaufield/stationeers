@@ -1,75 +1,128 @@
-push 156348098   # Waspaloy
+move sp 0
+push 156348098   # Start Waspaloy
 push 400         # Min Temp
 push 800         # Max Temp
 push 50000       # Min Pressure
 push 55000       # Max Pressure
-push -1897868623 # Stellite
+push 200         # Reagents per Stack
+push 0           # NULL
+push -916518678  # Silver
+push 1830218956  # Nickel
+push -190236170  # Lead
+push -190236170  # Lead
+push -1897868623 # Start Stellite
 push 1800        # Min Temp
 push 100000      # Max Temp
 push 10000       # Min Pressure
 push 20000       # Max Pressure
-push -787796599  # Inconel
+push 200         # Reagents per Stack
+push 0           # NULL
+push -916518678  # Silver
+push 1103972403  # Silicon
+push 1103972403  # Silicon
+push -983091249  # Cobalt
+push -787796599  # Start Inconel
 push 600         # Min Temp
 push 100000      # Max Temp
 push 23500       # Min Pressure
 push 24000       # Max Pressure
-push 1579842814  # Hastelloy
+push 200         # Reagents per Stack
+push 0           # NULL
+push -1348105509 # Gold
+push -1348105509 # Gold
+push -654790771  # Steel
+push 1830218956  # Nickel
+push 1579842814  # Start Hastelloy
 push 950         # Min Temp
 push 1000        # Max Temp
 push 25000       # Min Pressure
 push 30000       # Max Pressure
-push 412924554   # Astroloy
+push 200         # Reagents per Stack
+push 0           # NULL
+push -916518678  # Silver
+push -916518678  # Silver
+push 1830218956  # Nickel
+push -983091249  # Cobalt
+push 412924554   # Start Astroloy
 push 1000        # Min Temp
 push 100000      # Max Temp
 push 30000       # Min Pressure
 push 40000       # Max Pressure
-push -82508479   # Solder
+push 200         # Reagents per Stack
+push 0           # NULL
+push -707307845  # Copper
+push -654790771  # Steel
+push -654790771  # Steel
+push -983091249  # Cobalt
+push -82508479   # Start Solder
 push 350         # Min Temp
 push 550         # Max Temp
 push 1000        # Min Pressure
 push 55000       # Max Pressure
-push 1058547521  # Constantan
+push 100         # Reagents per Stack
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push -190236170  # Lead
+push 1758427767  # Iron
+push 1058547521  # Start Constantan
 push 1000        # Min Temp
 push 10000       # Max Temp
 push 20000       # Min Pressure
 push 55000       # Max Pressure
-push 1058547521  # Invar
+push 100         # Reagents per Stack
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push 1830218956  # Nickel
+push -707307845  # Copper
+push -297990285  # Start Invar
 push 1200        # Min Temp
 push 1500        # Max Temp
 push 18000       # Min Pressure
 push 20000       # Max Pressure
-push 502280180   # Electrum
+push 100         # Reagents per Stack
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push 1830218956  # Nickel
+push 1758427767  # Iron
+push 502280180   # Start Electrum
 push 600         # Min Temp
 push 10000       # Max Temp
 push 800         # Min Pressure
 push 2400        # Max Pressure
-push -654790771  # Steel
+push 100         # Reagents per Stack
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push -916518678  # Silver
+push -1348105509 # Gold
+push -654790771  # Start Steel
 push 900         # Min Temp
 push 100000      # Max Temp
 push 1000        # Min Pressure
 push 55000       # Max Pressure
-push -929742000  # Silver
+push 200         # Reagents per Stack
+push 0           # NULL
+push 1724793494  # Coal
+push 1758427767  # Iron
+push 1758427767  # Iron
+push 1758427767  # Iron
+push -929742000  # Start Silver
 push 600         # Min Temp
 push 100000      # Max Temp
 push 100         # Min Pressure
 push 55000       # Max Pressure
-push -290196476  # Silicon
+push 50          # Reagents per Stack
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push 0           # NULL
+push -916518678  # Silver
+push -290196476  # Start Silicon
 push 900         # Min Temp
 push 100000      # Max Temp
 push 100         # Min Pressure
 push 55000       # Max Pressure
-push -404336834  # Copper
-push 600         # Min Temp
-push 100000      # Max Temp
-push 100         # Min Pressure
-push 55000       # Max Pressure
-push 226410516   # Gold
-push 600         # Min Temp
-push 100000      # Max Temp
-push 100         # Min Pressure
-push 55000       # Max Pressure
-push -1301215609 # Iron
-push 800         # Min Temp
-push 100000      # Max Temp
-push 100         # Min Pressure
-push 55000       # Max Pressure
+push 50          # Reagents per Stack

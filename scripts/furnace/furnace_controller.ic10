@@ -3,15 +3,17 @@ alias TankPump d1
 alias FuelPump d2
 alias CoolantPump d3
 alias Furnace d4
+alias CountDial d5
 
-define LOOKUP       75
-define ELEMENT_SIZE 5
+define LOOKUP       165
+define ELEMENT_SIZE 11
 
 alias MaxPress r14
 alias MinPress r13
 alias MaxTemp  r12
 alias MinTemp  r11
-alias State    r10
+alias RCount   r10
+alias State    r9
 
 define STATE_IDLE 0
 define STATE_RUNNING 1 
@@ -39,13 +41,19 @@ beq State STATE_RUNNING run
 
 move sp LOOKUP
 beq sp 0 start
+
+sub sp sp 5 # Remove Ingredients
+pop RCount
 pop MaxPress
 pop MinPress
 pop MaxTemp
 pop MinTemp
 pop r1
-brne r0 r1 -6
+brne r0 r1 -7
 move State STATE_RUNNING
+
+l r1 CountDial Setting
+mul RCount RCount r1
 
 run:
 l r0 Furnace Pressure
@@ -64,7 +72,9 @@ select r5 r6 r4 0 # If we need heat and we can get it from the tank
 select r6 r5 0 r6 # Pump fuel if the heat cant come from the tank.
 
 slt r4 r0 MinPress # Under Pressure pump from tank
-select r5 r6 r5 r4 # Only pump from tank if we aren't trying to get heat from fuel
+select r4 r4 r6 1 # Only pump from tank if we aren't trying to get heat from fuel
+nor r4 r4 0
+or r5 r5 r4
 
 sgt r7 r1 MaxTemp # Too hot pump coolant
 select r5 r7 0 r5 # Only pump from the tank if we aren't pumping coolant.
@@ -82,9 +92,7 @@ l r0 Furnace RecipeHash
 l r1 db Setting
 bne r0 r1 start
 l r0 Furnace Reagents
-yield
-l r1 Furnace Reagents
-bne r0 r1 start
+blt r0 RCount start # Still Waiting for Reagents
 s Furnace Open 1
 s db Setting 0
 move State STATE_IDLE

@@ -1,26 +1,75 @@
 alias Dial d0
 alias Button d1
 alias FurnaceController d2
+alias CountDial d3
+alias RequestMem d4
 
-define LOOKUP       75
-define ELEMENT_SIZE 5
+define LOOKUP       165
+define ELEMENT_SIZE 11
+define STATE_IDLE    0
+define STATE_REQUEST 1
+define STATE_WAIT    2
+
+alias State r14
+alias CurrentIngot r13
+alias CurrentCount r12
+alias RequestIter r11
 
 s Dial Mode 15
 move sp LOOKUP
 
+move State STATE_IDLE
+
 start:
 yield
+beq State STATE_IDLE idle
+beq State STATE_WAIT wait
+idle:
 l r0 Dial Setting
-beqz r0 start
+brnez r0 3
+s db Setting 0
+j start
 sub r0 r0 1
-mul r0 r0 ELEMENT_SIZE
-add r0 r0 4
+mul CurrentIngot r0 ELEMENT_SIZE
+add r0 CurrentIngot 10
 sub sp LOOKUP r0
 pop r0
 s db Setting r0
-l r1 FurnaceController Setting
-bnez r1 start
 l r1 Button Activate
 beqz r1 start
 s FurnaceController Setting r0
+l CurrentCount CountDial Setting
+move State STATE_REQUEST
+
+move RequestIter CurrentCount
+loop1_start:
+beqz RequestIter loop1_end
+sub sp LOOKUP CurrentIngot
+loop2_start:
+pop r0
+beqz r0 loop2_end
+jal MakeRequest
+j loop2_start
+loop2_end:
+sub RequestIter RequestIter 1
+j loop1_start
+loop1_end:
+move State STATE_WAIT
+
+wait:
+l r1 FurnaceController Setting
+brnez r1 2
+move State STATE_IDLE
 j start
+
+MakeRequest:
+l r1 RequestMem Setting
+breqz r1 3
+yield
+jr -3
+s RequestMem Setting r0
+yield
+l r1 RequestMem Setting # Wait for Ack from Warehouse
+brne r1 -1 -2
+s RequestMem Setting 0
+j ra

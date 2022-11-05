@@ -1,0 +1,58 @@
+define MAXPRESSURE 50000
+define MINRATIO 0.01
+
+#push co2
+#push n2
+#push o2
+#push h2
+#push nos
+#push poll
+
+start:
+yield
+beqz r14 set_mode
+move r14 0
+
+move r13 0
+loop1_start:
+
+ls r0 db r13 PrefabHash
+
+move sp 12
+loop2_start:
+pop r1
+beq r1 r0 loop2_end
+bnez sp loop2_start
+loop2_end:
+
+div r0 sp 2
+trunc r0 r0
+mul r0 r0 2
+add r0 r0 1
+
+jr r0
+l r1 db RatioCarbonDioxideInput
+j end_switch
+l r1 db RatioNitrogenInput
+j end_switch
+l r1 db RatioOxygenInput
+j end_switch
+l r1 db RatioVolatilesInput
+j end_switch
+l r1 db RatioNitrousOxide
+j end_switch
+l r1 db RatioPollutant
+end_switch:
+sgt r12 r1 MINRATIO
+bnez r12 loop1_end
+add r13 r13 1
+blt r13 2 loop1_start
+loop1_end:
+
+l r14 db PressureOutput
+slt r14 r14 MAXPRESSURE
+
+and r14 r14 r12
+s db Mode r14
+
+j start

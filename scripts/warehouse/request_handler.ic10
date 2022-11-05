@@ -1,0 +1,49 @@
+alias RequestMem d0
+alias Sorter d1
+define VendingMachine -443130773
+define RequestList 12
+
+s Sorter Mode 2
+
+push 0
+brlt sp RequestList -1
+
+start:
+sleep 3
+l r0 RequestMem Setting
+
+beqz r0 check_sorter # No Pending Request
+beq r0 -1 check_sorter # Currently Pending an Ack
+sb VendingMachine RequestHash r0
+sleep 1
+sb VendingMachine RequestHash 0
+yield
+s RequestMem Setting -1
+move sp RequestList
+s db Setting 1
+loop1_start:
+pop r2
+brnez r2 3
+push r0
+j check_sorter
+bnez sp loop1_start
+
+check_sorter:
+s db Setting 2
+l r0 Sorter Output
+bne r0 -1 start # Sorter isn't ready for this
+ls r0 Sorter 0 OccupantHash
+beqz r0 start
+move r1 0
+move sp RequestList
+loop2_start:
+pop r2
+brne r0 r2 4
+push 0
+move r1 1
+j sort
+bnez sp loop2_start
+sort:
+s db Setting 3
+s Sorter Output r1
+j start
