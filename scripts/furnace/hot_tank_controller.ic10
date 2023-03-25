@@ -31,7 +31,7 @@ beq State STATE_OVERPRESSURE over_pressure
 hcf
 
 check_temp:
-brlt TTemp MAX_PRESSURE 4
+brlt TPress MAX_PRESSURE 4
 s FuelPump Setting 0
 move State STATE_OVERPRESSURE
 j start

@@ -1,0 +1,10 @@
+alias Vend d0
+alias Silo d1
+alias Display d2
+
+start:
+yield
+l r0 Vend Quantity
+l r1 Silo Quantity
+add r0 r0 r1
+j start

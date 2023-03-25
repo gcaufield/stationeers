@@ -1,16 +1,21 @@
 define MAXPRESSURE 50000
-define MINRATIO 0.01
+define MINRATIO 0
 
 #push co2
+push 1876847024
 #push n2
+push -1387439451
 #push o2
+push -1217998945
 #push h2
+push 1255156286
 #push nos
+push 465267979
 #push poll
+push 1959564765
 
 start:
 yield
-beqz r14 set_mode
 move r14 0
 
 move r13 0
@@ -18,7 +23,7 @@ loop1_start:
 
 ls r0 db r13 PrefabHash
 
-move sp 12
+move sp 6
 loop2_start:
 pop r1
 beq r1 r0 loop2_end

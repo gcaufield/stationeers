@@ -1,0 +1,21 @@
+alias SolarSensor d0
+alias WeatherStation d1
+define Radiator -566775170
+
+start:
+yield
+l r14 SolarSensor Vertical
+l r13 SolarSensor Horizontal
+sub r13 90 r14
+sb Radiator Horizontal r13
+l r0 WeatherStation Mode
+bne r0 0 check_storm
+sb Radiator Open 1
+j start
+check_storm:
+beq r0 2 close_radiator
+l r0 WeatherStation NextWeatherEventTime
+bgt r0 5 start # More than 5 seconds to nex event
+close_radiator:
+sb Radiator Open 0
+j start

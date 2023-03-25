@@ -1,0 +1,55 @@
+alias Light d0
+alias ExteriorDoor d1
+alias InteriorDoor d2
+alias Console d3
+alias ExteriorSens d4
+alias InteriorSens d5
+
+alias State r14
+
+define MAX_PRESSURE_DELTA 3
+define STATE_ENABLED 0
+define STATE_DISABLED 1
+
+move State STATE_DISABLED
+s Light On 1
+
+start:
+yield
+jal check_pressure
+l r13 Light On
+beq State STATE_ENABLED enabled
+beq State STATE_DISABLED disabled
+hcf
+
+enabled:
+s ExteriorDoor Lock 1
+s InteriorDoor Lock 1
+bnez r13 start # still enabled
+j start
+s Console On 0
+move State STATE_DISABLED
+j start
+
+disabled:
+s ExteriorDoor Lock 0
+s InteriorDoor Lock 0
+beqz r13 start # still disabled.
+s ExteriorDoor Open 0
+s InteriorDoor Open 0
+s Console On 1
+move State STATE_ENABLED
+j start
+
+check_pressure:
+l r0 ExteriorSens Pressure
+l r1 InteriorSens Pressure
+sub r0 r0 r1
+abs r0 r0
+sgt r0 r0 MAX_PRESSURE_DELTA
+add r1 1 r0
+mul r1 r1 2
+s Light Color r1
+breqz r0 2
+s Light On 1 # If the pressure delta is too large make sure the light is on.
+j ra
