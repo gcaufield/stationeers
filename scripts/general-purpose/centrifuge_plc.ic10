@@ -1,0 +1,63 @@
+alias CtlSwitch d0
+
+define STATE_IDLE 0
+define STATE_ACCEL 1
+define STATE_RUNNING 2
+
+alias State r14
+
+move State STATE_IDLE
+move r13 10
+move r3 0
+s db Throttle 0
+s db CombustionLimiter 0
+
+start:
+yield
+beq State STATE_RUNNING running
+beq State STATE_IDLE idle
+accel:
+l r0 db Rpm
+sleep 0.5
+l r1 db Rpm
+
+sub r0 r1 r0
+mul r0 r0 120 # RPM / min
+
+slt r1 r1 75
+nor r1 r1 r1
+and r1 r1 r3
+
+# Should we increase throttle?
+breqz r1 4 # Throttle is off or rpm lodon't increase
+slt r1 r0 110
+mul r2 r1 10
+add r13 r13 r2
+
+# Should we run the throttle
+slt r3 r0 200
+mul r3 r3 r13
+
+s db Throttle r3
+s db CombustionLimiter r3
+
+brne r4 100 2 # Max Throttle Reached
+move State STATE_RUNNING
+running:
+l r0 CtlSwitch Open
+beqz r0 start # Switch is closed
+s db Throttle 0
+s db CombustionLimiter 0
+move State STATE_IDLE
+
+idle:
+l r0 db Rpm
+brgt r0 100 2
+s db Open 1
+l r0 CtlSwitch Open
+bnez r0 start # Switch still open
+move State STATE_ACCEL
+move r13 10
+move r3 0
+s db Open 0
+j start

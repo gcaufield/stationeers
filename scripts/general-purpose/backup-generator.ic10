@@ -1,0 +1,7 @@
+define StationBat -400115994
+
+start:
+yield
+lb r12 StationBat  1
+
+

@@ -21,6 +21,7 @@ alias RequestCount r10
 s Dial Mode 15
 move sp LOOKUP
 
+brdns Sorter 2
 s Sorter Mode 2
 move State STATE_IDLE
 
@@ -46,7 +47,9 @@ l r1 Button Activate
 beqz r1 start
 s FurnaceController Setting r0
 l CurrentCount CountDial Setting
-move State STATE_REQUEST
+sdns r1 RequestMem
+select State r1 STATE_WAIT STATE_REQUEST
+beq State STATE_WAIT start # If we aren't making a request
 
 move RequestCount 0
 move RequestIter CurrentCount
@@ -88,6 +91,7 @@ move State STATE_IDLE
 j start
 
 CheckSorter:
+bdns Sorter ra # Noting to do if there is no sorter.
 l r1 Sorter Output
 bne r1 -1 ra # Sorter isn't ready 
 ls r1 Sorter 0 Occupied

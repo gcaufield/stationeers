@@ -1,10 +1,48 @@
-alias Vend d0
-alias Silo d1
-alias Display d2
+alias Display d0
+alias Dial d1
+alias ORE_LIST r15
+
+define SILO 1155865682
+define VEND -443130773
+
+push -983091249 # Cobalt
+push HASH("CobaltStore")
+push -654790771 # Steel
+push HASH("SteelStore")
+push 1103972403 # Silicon
+push HASH("SiliconStore")
+push 1830218956 # Nickel
+push HASH("NickelStore")
+push -190236170 # Lead
+push HASH("LeadStore")
+push -1348105509 # Gold
+push HASH("GoldStore")
+push -707307845 # Copper
+push HASH("CopperStore")
+push 1724793494 # Coal
+push HASH("CoalStore")
+push -916518678 # Silver
+push HASH("SilverStore")
+push 1758427767 # Iron
+push HASH("IronStore")
+
+move ORE_LIST sp
 
 start:
 yield
-l r0 Vend Quantity
-l r1 Silo Quantity
-add r0 r0 r1
+l r0 Dial Setting # read_dial
+mul r0 r0 2 # sizeof entry
+
+# ore = ORE_LIST[dial]
+move sp ORE_LIST
+sub sp ORE_LIST r0 
+pop r1 # Store Hash
+pop r2 # Ore Hash
+
+s db Setting r2
+lbn r3 VEND r1 Quantity Sum
+lbn r4 SILO r1 Quantity Sum
+add r1 r3 r4
+s Display Setting r1
+
 j start

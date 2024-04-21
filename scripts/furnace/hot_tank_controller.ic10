@@ -11,7 +11,7 @@ define STATE_OVERPRESSURE 1
 
 define MAX_PRESSURE 50000
 define TARGET_PRESSURE 40000
-define MIN_TEMP 1300
+define MIN_TEMP 1800
 
 s FuelPump Setting 0
 s Vent Setting 0

@@ -1,34 +1,25 @@
 alias Tank d0
-alias TankPump d1
-alias FuelPump d2
-alias CoolantPump d3
-alias Furnace d4
-alias CountDial d5
-
+alias PumpCtl d1
+alias Furnace d2
+alias CountDial d3
 define LOOKUP       165
 define ELEMENT_SIZE 11
-
 alias MaxPress r14
 alias MinPress r13
 alias MaxTemp  r12
 alias MinTemp  r11
 alias RCount   r10
 alias State    r9
-
 define STATE_IDLE 0
-define STATE_RUNNING 1 
-define STATE_COMPLETE 2
+define STATE_LOADING 1
+define STATE_RUNNING 2 
+define STATE_COMPLETE 3
 
 s Furnace SettingInput 100
 s Furnace SettingOutput 0
 
 s db Setting 0
-s TankPump On 1
-s FuelPump On 1
-s CoolantPump On 1
-s TankPump Setting 0
-s FuelPump Setting 0
-s CoolantPump Setting 0
+s PumpCtl Setting 0
 
 move sp LOOKUP
 move State STATE_IDLE
@@ -37,7 +28,8 @@ start:
 yield
 l r0 db Setting
 beqz r0 idle
-beq State STATE_RUNNING run
+beq State STATE_LOADING load
+beq State STATE_RUNNING load 
 beq State STATE_COMPLETE complete
 
 move sp LOOKUP
@@ -51,21 +43,33 @@ pop MaxTemp
 pop MinTemp
 pop r1
 brne r0 r1 -7
-move State STATE_RUNNING
-
+move State STATE_LOADING
 l r1 CountDial Setting
 mul RCount RCount r1
-
-run:
+load:
 l r0 Furnace Pressure
 l r1 Furnace Temperature
+beq State STATE_RUNNING run
+slt r6 r0 700 # Pressure less than 700kPa
+slt r5 r1 600 # Temperature below melting point
+sgt r4 r0 1100 # Pressure over 1.1 MPa
+or r6 r6 r5 # Set R6 if we need heat or pressure from the hot tank
+select r6 r4 0 r6 # Clear R6 if R4 is set
+add r6 r6 4 # Set Degas State During Loading
+mul r4 r4 75
+s PumpCtl Setting r6
+s Furnace SettingOutput r4
+l r0 Furnace Reagents
+blt r0 RCount start # Still Waiting for Reagents
+move State STATE_RUNNING
+j start
 
+run:
 # Check if we are over pressure.
 bgt r0 MaxPress dump
 s Furnace SettingOutput 0
 
 l r2 Tank Temperature
-l r3 Tank Pressure
 
 slt r6 r1 MinTemp # Under Temp Pump Fuel
 sgt r4 r2 MinTemp # Can we get heat from tank?
@@ -75,33 +79,30 @@ select r6 r5 0 r6 # Pump fuel if the heat cant come from the tank.
 slt r4 r0 MinPress # Under Pressure pump from tank
 select r4 r4 r6 1 # Only pump from tank if we aren't trying to get heat from fuel
 nor r4 r4 0
+and r4 r4 1
 or r5 r5 r4
 
 sgt r7 r1 MaxTemp # Too hot pump coolant
 select r5 r7 0 r5 # Only pump from the tank if we aren't pumping coolant.
 
-mul r5 r5 30
-mul r6 r6 5
-mul r7 r7 10
+mul r5 r5 1 # Tank
+mul r6 r6 2 # Fuel
+mul r7 r7 3 # Coolant
+add r5 r5 r6
+add r5 r5 r7
 
-s TankPump Setting r5
-s FuelPump Setting r6
-s CoolantPump Setting r7
+s PumpCtl Setting r5
 s Furnace Activate 1
 
 l r0 Furnace RecipeHash
 l r1 db Setting
 bne r0 r1 start
-l r0 Furnace Reagents
-blt r0 RCount start # Still Waiting for Reagents
 s Furnace Open 1
 move State STATE_COMPLETE
 j start
 
 dump:
-s TankPump Setting 0
-s FuelPump Setting 0
-s CoolantPump Setting 0
+s PumpCtl Setting 0
 s Furnace SettingOutput 30
 j start
 

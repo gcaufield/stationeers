@@ -1,0 +1,66 @@
+alias TankPump d0
+alias FuelPump d1
+alias CoolantPump d2
+alias WastePump d3
+alias OutputPump d4
+
+define STATE_IDLE 0
+define STATE_HOT 1
+define STATE_FUEL 2
+define STATE_COOL 3
+
+alias State r14
+alias Degas r13
+
+move State STATE_IDLE
+s TankPump On 1
+s FuelPump On 1
+s CoolantPump On 1
+s WastePump On 1
+s OutputPump On 1
+
+start:
+yield
+l State db Setting
+and Degas State 4
+and State State 3
+
+# Manage the De-gas / Hot Preserve Pumps
+brne Degas 4 4
+s WastePump Setting 0
+s OutputPump Setting 100
+jr 3
+s WastePump Setting 100
+s OutputPump Setting 0
+
+beq State STATE_HOT hot
+beq State STATE_FUEL fuel
+beq State STATE_COOL cool
+
+idle:
+s TankPump Setting 0
+s FuelPump Setting 0
+s CoolantPump Setting 0
+j start
+
+hot:
+s TankPump Setting 30
+s FuelPump Setting 0
+s CoolantPump Setting 0
+j start
+
+fuel:
+s TankPump Setting 0
+s FuelPump Setting 5
+s CoolantPump Setting 0
+j start
+
+cool:
+s TankPump Setting 0
+s FuelPump Setting 0
+s CoolantPump Setting 10
+j start
+
+
+
+

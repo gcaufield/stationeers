@@ -1,18 +1,26 @@
+alias Tank d0 
+
 define MAXPRESSURE 50000
 define MINRATIO 0
 
 #push co2
 push 1876847024
+push 416897318
 #push n2
 push -1387439451
+push -632657357
 #push o2
 push -1217998945
+push -1067319543
 #push h2
 push 1255156286
+push 1037507240
 #push nos
 push 465267979
+push 1824284061
 #push poll
 push 1959564765
+push 63677771
 
 start:
 yield
@@ -23,30 +31,37 @@ loop1_start:
 
 ls r0 db r13 PrefabHash
 
-move sp 6
+move sp 12
 loop2_start:
 pop r1
 beq r1 r0 loop2_end
 bnez sp loop2_start
 loop2_end:
 
-div r0 sp 2
+div r0 sp 2 #
 trunc r0 r0
-mul r0 r0 2
+mul r0 r0 3
 add r0 r0 1
 
 jr r0
 l r1 db RatioCarbonDioxideInput
+move r2 HASH("COPump")
 j end_switch
 l r1 db RatioNitrogenInput
+move r2 HASH("NPump")
 j end_switch
 l r1 db RatioOxygenInput
+move r2 HASH("OPump")
 j end_switch
 l r1 db RatioVolatilesInput
+move r2 HASH("HPump")
 j end_switch
 l r1 db RatioNitrousOxide
+move r2 HASH("NOPump")
 j end_switch
 l r1 db RatioPollutant
+move r2 HASH("PollPump")
+
 end_switch:
 sgt r12 r1 MINRATIO
 bnez r12 loop1_end
@@ -54,10 +69,11 @@ add r13 r13 1
 blt r13 2 loop1_start
 loop1_end:
 
-l r14 db PressureOutput
+l r14 d0 Pressure
 slt r14 r14 MAXPRESSURE
 
 and r14 r14 r12
 s db Mode r14
+sbn -321403609 r2 On r14
 
 j start

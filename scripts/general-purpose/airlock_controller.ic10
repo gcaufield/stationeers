@@ -7,7 +7,7 @@ alias InteriorSens d5
 
 alias State r14
 
-define MAX_PRESSURE_DELTA 3
+define MAX_PRESSURE_DELTA 5 
 define STATE_ENABLED 0
 define STATE_DISABLED 1
 
@@ -16,6 +16,7 @@ s Light On 1
 
 start:
 yield
+s db Setting State
 jal check_pressure
 l r13 Light On
 beq State STATE_ENABLED enabled
@@ -26,7 +27,6 @@ enabled:
 s ExteriorDoor Lock 1
 s InteriorDoor Lock 1
 bnez r13 start # still enabled
-j start
 s Console On 0
 move State STATE_DISABLED
 j start

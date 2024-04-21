@@ -9,7 +9,7 @@ start:
 yield
 l r14 SolarSensor Vertical
 l r13 SolarSensor Horizontal
-sub r13 90 r14
+add r14 90 r14
 
 move sp 4
 pop r12
