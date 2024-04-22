@@ -1,0 +1,44 @@
+alias Station d0
+alias Display d1
+
+define GREEN 2
+define ORANGE 3
+define RED 4
+define YELLOW 5
+
+define INCOMING 1
+define ACTIVE 2
+
+start:
+yield
+
+l r0 Station Mode
+beq r0 INCOMING incoming
+beq r0 ACTIVE active
+
+s Display Setting 0
+s Display Color GREEN
+sleep 10
+j start
+
+incoming:
+l r0 Station NextWeatherEventTime
+s Display Setting r0
+bgt r0 600 ten
+bgt r0 300 five
+s Display Color RED
+j start
+
+five:
+s Display Color ORANGE
+j start
+
+ten:
+s Display Color YELLOW
+j start
+
+active:
+s Display Setting 0
+s Display Color RED
+
+j start
