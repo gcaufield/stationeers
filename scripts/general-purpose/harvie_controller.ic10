@@ -41,9 +41,9 @@ bnez r0 ra # Return if Harvie is busy already
 lbns r0 HYDROPONICS_HASH Hydroponics 0 Occupied 0
 beqz r0 plant
 lbns r0 HYDROPONICS_HASH Hydroponics 0 Mature 0
-bne r0 1 ra
+bnez r0 ra
 lbns r0 HYDROPONICS_HASH Hydroponics 0 Seeding 0
-beqz r0 ra
+blt r0 0 ra
 sbn HARVIE_HASH Harvie Harvest 1
 j ra
 
