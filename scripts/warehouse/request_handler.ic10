@@ -1,4 +1,3 @@
-alias RequestMem d0
 alias Sorter d1
 define VendingMachine -443130773
 define RequestList 12
@@ -11,7 +10,7 @@ brlt sp RequestList -1
 
 start:
 yield
-l r0 RequestMem Setting
+l r0 db Setting
 
 beqz r0 check_sorter # No Pending Request
 beq r0 -1 check_sorter # Currently Pending an Ack
@@ -22,7 +21,7 @@ lb r1 VendingMachine ExportCount Sum
 sb VendingMachine ClearMemory 1
 seqz r1 r1 
 sub r1 -1 r1 # Set -2 if no export
-s RequestMem Setting r1
+s db Setting r1
 move sp RequestList
 loop1_start:
 pop r2

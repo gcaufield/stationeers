@@ -1,0 +1,38 @@
+alias InputVent d0
+alias OutputVent d1
+alias CoPump d3
+alias GasSensor d4
+define MinPressure 75
+define MaxPressure 85
+define MinCarbonDioxide 0.02
+
+s InputVent Mode 0
+s OutputVent Mode 1
+s InputVent PressureExternal 75
+s OutputVent PressureExternal 85
+
+s InputVent On 0
+s OutputVent On 0
+
+s InputVent Lock 1
+s OutputVent Lock 1
+
+start:
+yield
+
+# Check Pressure
+l r15 GasSensor Pressure
+sgt r0 r15 MaxPressure
+slt r1 r15 MinPressure
+or r0 r1 r0
+
+# If out of range turn on both vents (they'll figure it out)
+s InputVent On r0
+s OutputVent On r0 
+
+
+l r15 GasSensor RatioCarbonDioxide
+slt r0 r15 MinCarbonDioxide
+s CoPump On r0
+
+j start

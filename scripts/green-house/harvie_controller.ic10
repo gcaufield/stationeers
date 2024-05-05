@@ -1,0 +1,67 @@
+define HYDROPONICS_HASH -1841632400
+define HARVIE_HASH 958056199
+
+alias ListEnd r15
+alias Set r14
+
+push HASH("1")
+push HASH("2")
+push HASH("3")
+push HASH("4")
+push HASH("5")
+push HASH("6")
+push HASH("7")
+push HASH("8")
+push HASH("9")
+push HASH("10")
+push HASH("11")
+push HASH("12")
+push HASH("13")
+push HASH("14")
+push HASH("15")
+push HASH("16")
+push HASH("17")
+push HASH("18")
+push HASH("19")
+push HASH("20")
+push HASH("21")
+push HASH("22")
+push HASH("23")
+push HASH("24")
+
+move ListEnd sp
+
+start:
+yield
+move sp ListEnd
+
+loop:
+pop Set 
+
+jal check_device
+
+beqz sp start
+j loop
+
+check_device:
+
+lbn r0 HARVIE_HASH Set Activate 0
+bnez r0 ra # Return if Harvie is busy already
+
+lbns r0 HYDROPONICS_HASH Set 0 Occupied 0
+beqz r0 plant
+lbns r0 HYDROPONICS_HASH Set 0 Mature 0
+bne r0 1 ra
+lbns r0 HYDROPONICS_HASH Set 0 Seeding 0
+blt r0 0 ra
+sbn HARVIE_HASH Set Harvest 1
+j ra
+
+plant:
+lbns r0 HARVIE_HASH Set 0 Quantity 0
+beqz r0 ra
+lbn r0 HYDROPONICS_HASH Set Temperature 0
+blt r0 278 ra
+bgt r0 323 ra
+sbn HARVIE_HASH Set Plant 1
+j ra

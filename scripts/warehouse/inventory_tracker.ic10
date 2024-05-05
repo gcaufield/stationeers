@@ -9,21 +9,21 @@ push -983091249 # Cobalt
 push HASH("CobaltStore")
 push -654790771 # Steel
 push HASH("SteelStore")
-push 1103972403 # Silicon
+push -290196476 # Silicon
 push HASH("SiliconStore")
-push 1830218956 # Nickel
+push -1406385572 # Nickel
 push HASH("NickelStore")
-push -190236170 # Lead
+push 2134647745 # Lead
 push HASH("LeadStore")
-push -1348105509 # Gold
+push 226410516 # Gold
 push HASH("GoldStore")
-push -707307845 # Copper
+push -404336834 # Copper
 push HASH("CopperStore")
 push 1724793494 # Coal
 push HASH("CoalStore")
-push -916518678 # Silver
+push -929742000 # Silver
 push HASH("SilverStore")
-push 1758427767 # Iron
+push -1301215609 # Iron
 push HASH("IronStore")
 
 move ORE_LIST sp

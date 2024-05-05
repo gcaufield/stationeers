@@ -2,7 +2,7 @@ alias Tank d0
 alias PumpCtl d1
 alias Furnace d2
 alias CountDial d3
-define LOOKUP       165
+define LOOKUP       110
 define ELEMENT_SIZE 11
 alias MaxPress r14
 alias MinPress r13

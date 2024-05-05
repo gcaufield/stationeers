@@ -2,7 +2,7 @@ alias TankPump d0
 alias FuelPump d1
 alias CoolantPump d2
 alias WastePump d3
-alias OutputPump d4
+alias HotValve d4
 
 define STATE_IDLE 0
 define STATE_HOT 1
@@ -16,8 +16,9 @@ move State STATE_IDLE
 s TankPump On 1
 s FuelPump On 1
 s CoolantPump On 1
-s WastePump On 1
-s OutputPump On 1
+s WastePump On 0
+s WastePump Setting 100
+s HotValve On 1
 
 start:
 yield
@@ -26,12 +27,12 @@ and Degas State 4
 and State State 3
 
 # Manage the De-gas / Hot Preserve Pumps
-brne Degas 4 4
-s WastePump Setting 0
-s OutputPump Setting 100
+breq Degas 4 4
+s WastePump On 0
+s HotValve On 1
 jr 3
-s WastePump Setting 100
-s OutputPump Setting 0
+s WastePump On 1
+s HotValve On 0
 
 beq State STATE_HOT hot
 beq State STATE_FUEL fuel
@@ -44,7 +45,7 @@ s CoolantPump Setting 0
 j start
 
 hot:
-s TankPump Setting 30
+s TankPump Setting 10
 s FuelPump Setting 0
 s CoolantPump Setting 0
 j start
@@ -60,7 +61,3 @@ s TankPump Setting 0
 s FuelPump Setting 0
 s CoolantPump Setting 10
 j start
-
-
-
-

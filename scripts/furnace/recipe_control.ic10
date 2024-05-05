@@ -5,7 +5,7 @@ alias CountDial d3
 alias RequestMem d4
 alias Sorter d5
 
-define LOOKUP       165
+define LOOKUP       110
 define ELEMENT_SIZE 11
 define STATE_IDLE    0
 define STATE_REQUEST 1
@@ -18,7 +18,7 @@ alias CurrentCount r12
 alias RequestIter r11
 alias RequestCount r10
 
-s Dial Mode 15
+s Dial Mode 10
 move sp LOOKUP
 
 brdns Sorter 2

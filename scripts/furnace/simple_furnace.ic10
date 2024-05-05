@@ -1,0 +1,72 @@
+alias HotPump d0
+alias WastePump d1
+alias Furnace d2
+alias InChute d3
+alias OutChute d4
+
+alias Press r15
+alias Temp r14
+alias State r13
+
+define MIN_TEMP 950
+define MIN_PRESS 6000
+define MAX_PRESS 10000
+
+define IDLE 0
+define OVER_PRESSURE 1
+define UNDER_TEMP 2
+
+s Furnace Open 1
+
+s InChute Setting 1
+s OutChute Setting 1
+s InChute Open 1
+s OutChute Open 1
+
+s State IDLE
+
+start:
+yield
+
+l Press Furnace Pressure
+l Temp Furnace Temperature
+
+slt r0 Temp MIN_TEMP
+s Furnace Open r0 # Close the furnace if its under temperature
+
+beq State OVER_PRESSURE high_pressure
+
+brlt Press MAX_PRESS 3
+move State OVER_PRESSURE
+j start
+
+beq State UNDER_TEMP under_temp
+
+brgt Temp MIN_TEMP 3
+move State UNDER_TEMP
+j start
+
+l r0 InChute Open 
+l r1 OutChute Open
+
+or r0 r0 r1 # check if either of the chutes are "open"
+
+bnez r0 start # At least one of the chutes is open, something is cooking or we're waiting for input
+# Open both chutes
+s InChute Open 1
+s OutChute Open 1
+j start
+
+high_pressure:
+s WastePump On 1
+s HotPump On 0
+brgt Press MIN_PRESS 2
+move State IDLE
+j start
+
+under_temp:
+s WastePump On 0
+s HotPump On 1
+brlt Temp MIN_TEMP 2
+move State IDLE
+j start

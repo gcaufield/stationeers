@@ -1,0 +1,96 @@
+alias RequestParent d0
+
+alias ReqNames r15
+alias ReqList r14
+alias Name r13
+alias State r12
+alias CurrentReq r11
+
+define Sorter -1009150565
+define Memory -851746783
+
+define RequestListLen 12
+define STATE_IDLE 0
+define STATE_REQUEST 1
+define STATE_WAIT 2
+
+push HASH("Req1")
+push HASH("Req2")
+move ReqNames sp
+
+# Configure the Sorters
+breqz sp 4
+pop Name
+sbn Sorter Name Mode 2
+jr -3
+
+move sp ReqNames
+
+# Fill the request list
+move r0 0
+push 0
+push 0
+add r0 r0 1
+brlt r0 RequestListLen -3
+move ReqList sp
+
+move State STATE_IDLE
+
+start:
+yield
+
+j check_sorters
+
+beq State STATE_REQUEST pending_request
+
+move sp ReqNames
+beqz sp start # No Requests Pending
+pop Name
+lbn CurrentReq Memory Name Setting 0
+brnez CurrentReq 2
+jr -4
+move State STATE_REQUEST
+
+s RequestParent Setting CurrentReq
+j start
+
+pending_request:
+l r0 RequestParent Setting
+beq r0 CurrentReq start # Request still pending
+s RequestParent Setting 0 # Ack that request is complete
+move State STATE_IDLE
+sbn Memory Name Setting r0 # Mirror the response from the warehouse
+bne r0 -1 start # Export Failed.
+move sp ReqList
+beq sp ReqNames start
+pop r0
+pop r1
+brnez r1 -3 # Slot in use
+push CurrentReq
+push Name
+j start
+
+check_sorters:
+move sp ReqNames
+sorter_loop:
+beqz sp ra # Checked all of the sorters
+pop r5 # Name
+lbn r0 Sorter r5 Output 0
+brne r0 -1 sorter_loop # Sorter isn't ready for this
+lbns r0 Sorter r5 0 OccupantHash 0
+beqz r0 sorter_loop
+move r7 0
+move r6 sp # Backup SP
+move sp ReqList
+beq sp ReqNames sort
+pop r1 # Name
+pop r2 # Req
+brne r1 r5 -3 # Request isn't for this sorter
+brne r2 r0 -4 # Request isn't for this Item
+push 0 # Clear Request
+push 0
+move r7 1
+sort:
+sbn Sorter r5 Output r7
+move sp r6 # Restore SP
+j sorter_loop
