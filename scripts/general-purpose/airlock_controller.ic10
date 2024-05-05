@@ -7,17 +7,20 @@ alias InteriorSens d5
 
 alias State r14
 
-define MAX_PRESSURE_DELTA 5 
+define ValveHash -1280984102
+
+define MAX_PRESSURE_DELTA 5
 define STATE_ENABLED 0
 define STATE_DISABLED 1
 
 move State STATE_DISABLED
 s Light On 1
+sb ValveHash Lock 1
 
 start:
 yield
-s db Setting State
 jal check_pressure
+s db Setting State
 l r13 Light On
 beq State STATE_ENABLED enabled
 beq State STATE_DISABLED disabled
@@ -28,6 +31,7 @@ s ExteriorDoor Lock 1
 s InteriorDoor Lock 1
 bnez r13 start # still enabled
 s Console On 0
+sb ValveHash On 1
 move State STATE_DISABLED
 j start
 
@@ -35,6 +39,7 @@ disabled:
 s ExteriorDoor Lock 0
 s InteriorDoor Lock 0
 beqz r13 start # still disabled.
+sb ValveHash On 0
 s ExteriorDoor Open 0
 s InteriorDoor Open 0
 s Console On 1
