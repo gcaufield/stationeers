@@ -2,6 +2,11 @@ alias Display d0
 alias Dial d1
 alias ORE_LIST r15
 
+alias Button d2
+alias Memory d3
+alias CountDial d4
+alias Stacker d5
+
 define SILO 1155865682
 define VEND -443130773
 
@@ -28,6 +33,8 @@ push HASH("IronStore")
 
 move ORE_LIST sp
 
+s Memory Setting 0
+
 start:
 yield
 l r0 Dial Setting # read_dial
@@ -43,6 +50,23 @@ s db Setting r2
 lbn r3 VEND r1 Quantity Sum
 lbn r4 SILO r1 Quantity Sum
 add r1 r3 r4
+mul r1 r1 50
 s Display Setting r1
 
-j start
+l r0 Memory Setting
+bnez r0 start # Request in progress
+
+l r0 Button Activate
+beqz r0 start
+
+l r1 CountDial Setting
+mul r3 r1 50
+s Stacker Setting r3
+beqz r1 start
+sub r1 r1 1
+s Memory Setting r2
+yield
+l r0 Memory Setting
+breq r0 r2 -2 # Request still pending
+s Memory Setting 0 # Ack the request regardless of response
+jr -7

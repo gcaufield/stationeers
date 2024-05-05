@@ -39,9 +39,9 @@ move State STATE_IDLE
 start:
 yield
 
-j check_sorters
-
 beq State STATE_REQUEST pending_request
+
+jal check_sorters
 
 move sp ReqNames
 beqz sp start # No Requests Pending
