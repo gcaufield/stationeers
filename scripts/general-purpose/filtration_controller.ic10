@@ -1,6 +1,6 @@
 alias Tank d0 
 
-define MAXPRESSURE 50000
+define MAXPRESSURE 45000
 define MINRATIO 0
 
 #push co2

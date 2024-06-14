@@ -1,35 +1,49 @@
-alias Fabricator d0
-alias Stacker d1
+define Stacker 1585641623
 
-s Stacker ClearMemory 1
-s Stacker Setting 1
-s Stacker Mode 0
-s Stacker On 0
-s Stacker Lock 0
-s Fabricator ClearMemory 1
+move r15 0
+init_loop:
+bdns dr15 init_loop_end
+l r14 dr15 NameHash
+s db Setting r14
+sbn Stacker r14 ClearMemory 1
+sbn Stacker r14 Setting 1
+sbn Stacker r14 Mode 0
+sbn Stacker r14 On 0
+sbn Stacker r14 Lock 0
+s dr15 ClearMemory 1
+init_loop_end:
+add r15 r15 1
+blt r15 6 init_loop
 
 start:
 yield
-l r0 Fabricator Activate
+move r15 0
+loop:
+bdns dr15 loop_end
+l r14 dr15 NameHash
+l r0 dr15 Activate
 beq r0 1 check # If fabricator is active check if we are done exporting
-l r0 Stacker On
-beqz r0 start # Stacker isn't On
-l r1 Fabricator ExportCount
+lbn r0 Stacker r14 On Maximum
+beqz r0 loop_end # Stacker isn't On
+l r1 dr15 ExportCount
 j wait_import
 check:
-s Stacker On 1
-l r0 Stacker Setting
-l r1 Fabricator ExportCount
-blt r1 r0 start
-s Fabricator Activate 0
+sbn Stacker r14 On 1
+lbn r0 Stacker r14 Setting Maximum
+l r1 dr15 ExportCount
+blt r1 r0 loop_end
+s dr15 Activate 0
 wait_import:
-l r0 Stacker ImportCount
+lbn r0 Stacker r14 ImportCount Maximum
 yield
 blt r0 r1 wait_import
 sleep 1
-s Stacker Activate 1
+sb Stacker r14 Activate 1
 yield # Yield for export
-s Stacker ClearMemory 1
-s Stacker On 0
-s Fabricator ClearMemory 1
+sbn Stacker r14 ClearMemory 1
+sbn Stacker r14 On 0
+s dr15 ClearMemory 1
+loop_end:
+add r15 r15 1 # Increment the device
+blt r15 6 loop
 j start

@@ -1,0 +1,46 @@
+define CENT 1238905683
+alias Switch d0
+
+define STATE_RUNNING 0
+define STATE_DECEL 1
+define STATE_UNLOADING 2
+
+alias State r14
+
+sb CENT ClearMemory 1
+move State STATE_DECEL
+
+start:
+seq r0 State STATE_RUNNING
+s db Setting r0
+
+yield
+beq State STATE_RUNNING running
+beq State STATE_DECEL decel
+beq State STATE_UNLOADING unload
+
+running:
+lb r0 CENT ImportCount Average
+brgt r0 2000 3 # If we've imported 2000 things into each centrifuge
+l r0 Switch Open
+beqz r0 start # Switch is closed
+sb CENT On 0
+move State STATE_DECEL
+
+decel:
+lb r0 CENT Rpm Maximum
+bnez r0 start # One of the Centrifuges is still running
+sb CENT On 1
+sb CENT Open 1
+move State STATE_UNLOADING
+
+unload:
+sb CENT ClearMemory 1
+lb r1 CENT ExportCount Sum
+sleep 2
+lb r2 CENT ExportCount Sum
+bne r1 r2 start # Something is still exporting
+sb CENT Open 0
+s Switch Open 0 # Close the switch
+move State STATE_RUNNING
+j start

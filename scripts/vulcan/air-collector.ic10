@@ -2,14 +2,15 @@ alias Vent d0
 alias Tank d1
 alias Sensor d2
 
-define MinTankPressure 1000
-define MaxTankPressure 4000
-define MaxDelta 10
+define MinTankPressure 500
+define MaxTankPressure 20000
+define MaxDelta 15
 
 s Vent On 0
 s Vent Mode 0
 
 start:
+yield
 
 l r14 Tank Temperature
 l r13 Sensor Temperature

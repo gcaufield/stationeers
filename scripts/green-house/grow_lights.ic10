@@ -5,6 +5,6 @@ alias SolarSensor d0
 start:
 yield
 l r0 SolarSensor SolarAngle
-sgt r0 r0 112.5
+slt r0 r0 112.5
 sb GROWLIGHT On r0 
 j start

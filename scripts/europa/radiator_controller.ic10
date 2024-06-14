@@ -1,0 +1,11 @@
+alias Analyzer d0
+alias Valve d1
+
+start:
+yield
+
+l r0 Analyzer Temperature
+sgt r0 r0 193
+s Valve On r0
+
+j start

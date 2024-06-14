@@ -1,0 +1,15 @@
+
+s db Mode 0
+
+start:
+yield
+
+l r0 db Pressure
+l r1 db RatioOxygenInput
+
+mul r0 r0 r1
+sgt r0 r0 20 # Is Partial Pressure of O2 greater than 20
+
+s db Mode r0
+
+j start

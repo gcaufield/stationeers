@@ -1,10 +1,11 @@
-alias CtlSwitch d0
+alias Controller d0
 
 define STATE_IDLE 0
 define STATE_ACCEL 1
 define STATE_RUNNING 2
 
 alias State r14
+alias ControllerState r12
 
 move State STATE_IDLE
 move r13 10
@@ -14,7 +15,16 @@ s db CombustionLimiter 0
 
 start:
 yield
-beq State STATE_RUNNING running
+l r0 Controller Setting
+beq r0 ControllerState procstate
+move ControllerState r0
+brnez ControllerState 3
+s db Throttle 0
+s db CombustionLimiter 0
+move State r0
+
+procstate:
+beq State STATE_RUNNING idle
 beq State STATE_IDLE idle
 accel:
 l r0 db Rpm
@@ -43,21 +53,6 @@ s db CombustionLimiter r3
 
 brne r4 100 2 # Max Throttle Reached
 move State STATE_RUNNING
-running:
-l r0 CtlSwitch Open
-beqz r0 start # Switch is closed
-s db Throttle 0
-s db CombustionLimiter 0
-move State STATE_IDLE
 
 idle:
-l r0 db Rpm
-brgt r0 100 2
-s db Open 1
-l r0 CtlSwitch Open
-bnez r0 start # Switch still open
-move State STATE_ACCEL
-move r13 10
-move r3 0
-s db Open 0
 j start
