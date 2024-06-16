@@ -10,6 +10,7 @@ alias MaxTemp  r12
 alias MinTemp  r11
 alias RCount   r10
 alias State    r9
+alias LookupOffset r8
 define STATE_IDLE 0
 define STATE_LOADING 1
 define STATE_RUNNING 2 
@@ -29,48 +30,76 @@ yield
 l r0 db Setting
 beqz r0 idle
 beq State STATE_LOADING load
-beq State STATE_RUNNING load 
+beq State STATE_RUNNING run
 beq State STATE_COMPLETE complete
 
+move LookupOffset -1
 move sp LOOKUP
 beq sp 0 start
-
-sub sp sp 5 # Remove Ingredients
+add LookupOffset LookupOffset 1
+sub sp sp 10 # Remove all data
+pop r1
+brne r0 r1 -4
+move State STATE_LOADING
+mul LookupOffset LookupOffset ELEMENT_SIZE
+sub sp LOOKUP LookupOffset
+sub sp sp 5
 pop RCount
+l r1 CountDial Setting
+mul RCount RCount r1
+move MaxPress 1100
+move MinPress 700
+move MinTemp 600
+move MaxTemp 100000
+
+load:
+jal manage_temp
+l r0 Furnace Reagents
+blt r0 RCount start # Still Waiting for Reagents
+sub sp LOOKUP LookupOffset
+sub sp sp 6
 pop MaxPress
 pop MinPress
 pop MaxTemp
 pop MinTemp
-pop r1
-brne r0 r1 -7
-move State STATE_LOADING
-l r1 CountDial Setting
-mul RCount RCount r1
-load:
-l r0 Furnace Pressure
-l r1 Furnace Temperature
-beq State STATE_RUNNING run
-slt r6 r0 700 # Pressure less than 700kPa
-slt r5 r1 600 # Temperature below melting point
-sgt r4 r0 1100 # Pressure over 1.1 MPa
-or r6 r6 r5 # Set R6 if we need heat or pressure from the hot tank
-select r6 r4 0 r6 # Clear R6 if R4 is set
-add r6 r6 4 # Set Degas State During Loading
-mul r4 r4 75
-s PumpCtl Setting r6
-s Furnace SettingOutput r4
-l r0 Furnace Reagents
-blt r0 RCount start # Still Waiting for Reagents
 move State STATE_RUNNING
 j start
 
 run:
-# Check if we are over pressure.
-bgt r0 MaxPress dump
-s Furnace SettingOutput 0
+jal manage_temp
 
+l r0 Furnace RecipeHash
+l r1 db Setting
+bne r0 r1 start
+s Furnace Open 1
+move State STATE_COMPLETE
+j start
+
+complete:
+l r0 Furnace Reagents
+brnez r0 4
+s db Setting 0
+s Furnace Open 0
+move State STATE_IDLE
+j start
+
+idle:
+move MaxPress 10000
+move MinPress 700
+move MinTemp 900
+move MaxTemp 100000
+jal manage_temp
+j start
+
+manage_temp:
+l r0 Furnace Pressure
+l r1 Furnace Temperature
 l r2 Tank Temperature
-
+brlt r0 MaxPress 5
+slt r5 r1 1900 # Over Pressure
+mul r5 r5 4
+move r4 30
+j mt_end
 slt r6 r1 MinTemp # Under Temp Pump Fuel
 sgt r4 r2 MinTemp # Can we get heat from tank?
 select r5 r6 r4 0 # If we need heat and we can get it from the tank
@@ -90,31 +119,8 @@ mul r6 r6 2 # Fuel
 mul r7 r7 3 # Coolant
 add r5 r5 r6
 add r5 r5 r7
-
+move r4 0
+mt_end:
 s PumpCtl Setting r5
-s Furnace Activate 1
-
-l r0 Furnace RecipeHash
-l r1 db Setting
-bne r0 r1 start
-s Furnace Open 1
-move State STATE_COMPLETE
-j start
-
-dump:
-s PumpCtl Setting 0
-s Furnace SettingOutput 30
-j start
-
-complete:
-l r0 Furnace Reagents
-brnez r0 4
-s db Setting 0
-s Furnace Open 0
-move State STATE_IDLE
-j start
-
-idle:
-move State STATE_IDLE
-s Furnace SettingOutput 100
-j start
+s Furnace SettingOutput r4
+j ra

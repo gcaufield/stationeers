@@ -38,7 +38,7 @@ lbn r0 Stacker r14 ImportCount Maximum
 yield
 blt r0 r1 wait_import
 sleep 1
-sb Stacker r14 Activate 1
+sbn Stacker r14 Activate 1
 yield # Yield for export
 sbn Stacker r14 ClearMemory 1
 sbn Stacker r14 On 0

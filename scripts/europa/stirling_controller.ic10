@@ -1,0 +1,82 @@
+alias Engine d0
+alias Sensor d1
+alias PowerOutput d2
+alias Switch d3
+
+alias State r15
+alias Stop r14
+
+define Door HASH("StructureCompositeDoor")
+define Vent HASH("StructureActiveVent")
+define Regulator HASH("StructurePressureRegulator")
+define Analyzer HASH("StructureCableAnalysizer")
+
+define DISABLED 0
+define ENABLED 1
+define PRIMING 2
+define TargetPressure 150
+
+define Outward 0
+define Inward 1
+
+move State DISABLED
+sbn Regulator HASH("Radiator") Setting 800
+sbn Regulator HASH("Radiator") On 1
+#sbn Regulator HASH("Radiator") Lock 1
+sbn Vent HASH("Secondary") PressureExternal TargetPressure
+sbn Vent HASH("Secondary") Lock 1
+sbn Vent HASH("Secondary") Mode Outward
+
+start:
+yield
+s db Setting State
+l r0 Engine PowerGeneration
+lb r1 Analyzer PowerActual Maximum
+sub r0 r0 r1
+s PowerOutput Setting r0
+move r1 2
+brgtz r0 2
+move r1 4
+s PowerOutput Color r1
+
+l Stop Switch Open
+breqz Stop 2
+move State DISABLED
+beq State DISABLED disabled
+beq State PRIMING prime
+
+s Engine On 1
+l r0 Sensor Temperature
+sgt r0 r0 300
+sbn Vent HASH("Primary") PressureExternal 130
+sbn Vent HASH("Primary") On r0
+
+j start
+
+disabled:
+s Engine On 0
+sbn Vent HASH("Secondary") On 0
+sbn Vent HASH("Primary") PressureExternal 0
+sbn Vent HASH("Primary") Mode Inward
+
+l r0 Sensor Pressure
+snez r0 r0
+sb Door Lock r0
+sbn Vent HASH("Primary") On r0
+
+bnez Stop start
+sb Door Lock 1
+sb Door Open 0
+move State PRIMING
+j start
+
+prime:
+sbn Vent HASH("Primary") Mode Outward
+sbn Vent HASH("Primary") PressureExternal 160
+sbn Vent HASH("Primary") On 1
+l r0 Sensor Pressure
+blt r0 TargetPressure start
+move State ENABLED
+sbn Vent HASH("Primary") Mode Inward
+sbn Vent HASH("Secondary") On 1
+j start

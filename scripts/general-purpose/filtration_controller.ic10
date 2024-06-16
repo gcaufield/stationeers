@@ -1,79 +1,91 @@
-alias Tank d0 
+alias Tank d0
+
+define Light HASH("StructureFlashingLight")
 
 define MAXPRESSURE 45000
 define MINRATIO 0
 
 #push co2
-push 1876847024
-push 416897318
+push HASH("ItemGasFilterCarbonDioxideL")
+push HASH("ItemGasFilterCarbonDioxideM")
+push HASH("ItemGasFilterCarbonDioxide")
 #push n2
-push -1387439451
-push -632657357
+push HASH("ItemGasFilterNitrogenL")
+push HASH("ItemGasFilterNitrogenM")
+push HASH("ItemGasFilterNitrogen")
 #push o2
-push -1217998945
-push -1067319543
+push HASH("ItemGasFilterOxygenL")
+push HASH("ItemGasFilterOxygenM")
+push HASH("ItemGasFilterOxygen")
 #push h2
-push 1255156286
-push 1037507240
+push HASH("ItemGasFilterVolatilesL")
+push HASH("ItemGasFilterVolatilesM")
+push HASH("ItemGasFilterVolatiles")
 #push nos
-push 465267979
-push 1824284061
+push HASH("ItemGasFilterNitrousOxideL")
+push HASH("ItemGasFilterNitrousOxideM")
+push HASH("ItemGasFilterNitrousOxide")
 #push poll
-push 1959564765
-push 63677771
+push HASH("ItemGasFilterPollutantsL")
+push HASH("ItemGasFilterPollutantsM")
+push HASH("ItemGasFilterPollutants")
+
+
+alias Name r12
+l Name db NameHash
 
 start:
 yield
+move r13 0
 move r14 0
 
-move r13 0
-loop1_start:
+ls r0 db 0 PrefabHash
 
-ls r0 db r13 PrefabHash
-
-move sp 12
-loop2_start:
+move sp 18
 pop r1
-beq r1 r0 loop2_end
-bnez sp loop2_start
-loop2_end:
+breq r1 r0 3
+beqz sp pumps
+jr -3
 
-div r0 sp 2 #
+div r0 sp 3 #
 trunc r0 r0
-mul r0 r0 3
+mul r0 r0 2
 add r0 r0 1
 
 jr r0
-l r1 db RatioCarbonDioxideInput
-move r2 HASH("COPump")
+l r13 db RatioCarbonDioxideInput
 j end_switch
-l r1 db RatioNitrogenInput
-move r2 HASH("NPump")
+l r13 db RatioNitrogenInput
 j end_switch
-l r1 db RatioOxygenInput
-move r2 HASH("OPump")
+l r13 db RatioOxygenInput
 j end_switch
-l r1 db RatioVolatilesInput
-move r2 HASH("HPump")
+l r13 db RatioVolatilesInput
 j end_switch
-l r1 db RatioNitrousOxide
-move r2 HASH("NOPump")
+l r13 db RatioNitrousOxideInput
 j end_switch
-l r1 db RatioPollutant
-move r2 HASH("PollPump")
-
+l r13 db RatioPollutantInput
 end_switch:
-sgt r12 r1 MINRATIO
-bnez r12 loop1_end
-add r13 r13 1
-blt r13 2 loop1_start
-loop1_end:
 
+snez r13 r13
 l r14 d0 Pressure
 slt r14 r14 MAXPRESSURE
 
-and r14 r14 r12
+and r14 r14 r13
 s db Mode r14
-sbn -321403609 r2 On r14
+
+pumps:
+l r0 db PressureOutput
+l r1 db PressureOutput2
+select r0 r0 r0 r1
+snez r0 r0
+sbn HASH("StructureVolumePump") Name On r0
+
+ls r0 db 0 Quantity
+ls r1 db 1 Quantity
+seqz r0 r0
+seqz r1 r1
+or r0 r0 r1
+sbn Light Name On r0
+
 
 j start

@@ -1,6 +1,5 @@
 alias Tank d0
 alias FuelPump d1
-alias Vent d2
 
 alias State r15
 alias TPress r14
@@ -13,17 +12,14 @@ define STATE_TEMP 0
 define STATE_HEAT 1
 define STATE_OVERPRESSURE 2
 
-define MAX_PRESSURE 40000
-define MAX_COMBUST_PRESSURE 45000
-define TARGET_PRESSURE 35000
+define MAX_PRESSURE 51000
 define MIN_TEMP 1900
 define TARGET_TEMP 2200
 
+
 s FuelPump Setting 10
-s Vent Setting 50
 
 s FuelPump On 0
-s Vent On 0
 
 move State STATE_TEMP
 
@@ -33,11 +29,9 @@ s db Setting State
 yield
 l TPress Tank Pressure
 l TTemp Tank Temperature
-l TCombust Tank Combustion
 
 move MaxPressure MAX_PRESSURE
 breqz TCombust 2
-move MaxPressure MAX_COMBUST_PRESSURE
 
 beq State STATE_OVERPRESSURE over_pressure
 
@@ -56,8 +50,7 @@ select State r0 State STATE_TEMP
 j start
 
 over_pressure:
-sgt r0 TPress TARGET_PRESSURE
-s Vent On r0
+sgt r0 TPress MAX_PRESSURE
 brnez r0 2
 move State STATE_TEMP
 j start
