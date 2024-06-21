@@ -2,6 +2,7 @@ alias Engine d0
 alias Sensor d1
 alias PowerOutput d2
 alias Switch d3
+alias RequestMemory d4
 
 alias State r15
 alias Stop r14
@@ -29,7 +30,6 @@ sbn Vent HASH("Secondary") Mode Outward
 
 start:
 yield
-s db Setting State
 l r0 Engine PowerGeneration
 lb r1 Analyzer PowerActual Maximum
 sub r0 r0 r1
@@ -45,6 +45,12 @@ move State DISABLED
 beq State DISABLED disabled
 beq State PRIMING prime
 
+l r0 RequestMemory Setting
+add r0 r0 300
+div r0 r0 100
+sgt r1 r0 100
+select r0 r1 100 r0
+sbn Regulator HASH("Fuel") Setting r0
 s Engine On 1
 l r0 Sensor Temperature
 sub r0 r0 275

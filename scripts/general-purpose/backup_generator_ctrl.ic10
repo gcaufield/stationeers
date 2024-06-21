@@ -1,0 +1,17 @@
+alias Demand d0
+alias Supply d1
+alias RequestMemory d2
+
+start:
+yield
+
+lb r0 HASH("StructureBatteryLarge") Charge Sum
+lb r1 HASH("StructureBatteryLarge") Maximum Sum
+
+div r0 r0 r1
+move r1 0
+brgt r0 0.10 2
+l r1 Demand PowerRequired
+s RequestMemory Setting r1
+j start
+
