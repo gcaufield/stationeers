@@ -8,11 +8,15 @@ push -934345724 # Solar Panel Heavy
 
 start:
 yield
+move r0 0
+brdns Memory 3
 l r0 Memory Setting
 mul r0 r0 90
-l r14 SolarSensor Vertical
 l r13 SolarSensor Horizontal
-add r14 r0 r14
+add r13 r0 r13
+
+l r14 SolarSensor Vertical
+add r14 r14 90
 
 move sp 4
 pop r12
