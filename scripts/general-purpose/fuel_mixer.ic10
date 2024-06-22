@@ -1,12 +1,30 @@
 alias Mixer d0
 alias Tank d1
+alias Oxygen d2
+alias Volatiles d3
 
-div r1 1.0 3.0
+alias OTemp r14
+alias VTemp r13
+
+define TRatio 0.333333333333
 
 start:
 yield
+
+l OTemp Oxygen Temperature
+l VTemp Volatiles Temperature
+
+# r = (r'T1) / ((1-r')T2+r'T1)
+mul r1 OTemp TRatio # r'T1
+sub r2 1 TRatio # (1-r')
+mul r2 VTemp r2 # (1-r')T2
+add r2 r1 r2 # ((1-r')T2 + r'T1
+div r1 r1 r2
+mul r1 r1 100 # Scale for Mixer setting
 s Mixer Setting r1
+
 l r0 Tank Pressure
-slt r0 r0 3000
+slt r0 r0 10000
 s Mixer On r0
+
 j start

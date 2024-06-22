@@ -10,6 +10,7 @@ define Door HASH("StructureCompositeDoor")
 define Vent HASH("StructureActiveVent")
 define Regulator HASH("StructurePressureRegulator")
 define Analyzer HASH("StructureCableAnalysizer")
+define Valve HASH("StructureDigitalValve")
 
 define DISABLED 0
 define ENABLED 1
@@ -20,12 +21,9 @@ define Outward 0
 define Inward 1
 
 move State DISABLED
-sbn Regulator HASH("Radiator") On 1
-sbn Regulator HASH("Radiator") Lock 1
-sbn Regulator HASH("Radiator") Setting 800
-sbn Vent HASH("Secondary") PressureExternal TargetPressure
 sbn Vent HASH("Secondary") Lock 1
-sbn Vent HASH("Secondary") Mode Outward
+sbn Vent HASH("Secondary") Mode Inward 
+sbn Vent HASH("Secondary") PressureExternal 0
 
 start:
 yield
@@ -45,17 +43,24 @@ move State DISABLED
 beq State DISABLED disabled
 beq State PRIMING prime
 
+sb Valve On 1
 s Engine On 1
 l r0 Sensor Temperature
-sub r0 r0 275
-sub r0 160 r0
-sbn Vent HASH("Primary") PressureExternal r0
+sub r0 r0 283
+sub r1 150 r0
+add r2 150 r0
+sbn Vent HASH("Primary") Mode Inward
+sbn Vent HASH("Primary") PressureExternal r1
 sbn Vent HASH("Primary") On 1
+
+sbn Vent HASH("Secondary") PressureInternal r2
+sbn Vent HASH("Secondary") On 1
 
 j start
 
 disabled:
 s Engine On 0
+sb Valve On 0
 sbn Vent HASH("Secondary") On 0
 sbn Vent HASH("Primary") PressureExternal 0
 sbn Vent HASH("Primary") Mode Inward
@@ -76,9 +81,10 @@ sbn Vent HASH("Primary") Mode Outward
 sbn Vent HASH("Primary") PressureExternal 160
 sbn Vent HASH("Primary") On 1
 l r0 Sensor Pressure
-blt r0 TargetPressure start
+brgt r0 TargetPressure 4
+sleep 1
+l r1 Sensor Pressure
+sub r1 r1 1 # Pressure Increase by atleast 1 kpa
+blt r0 r1 start # If the pressure changed jump to start
 move State ENABLED
-sbn Vent HASH("Primary") On 0
-sbn Vent HASH("Primary") Mode Inward
-sbn Vent HASH("Secondary") On 1
 j start
