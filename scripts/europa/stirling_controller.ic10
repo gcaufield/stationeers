@@ -22,7 +22,7 @@ define Inward 1
 
 move State DISABLED
 sbn Vent HASH("Secondary") Lock 1
-sbn Vent HASH("Secondary") Mode Inward 
+sbn Vent HASH("Secondary") Mode Inward
 sbn Vent HASH("Secondary") PressureExternal 0
 
 start:

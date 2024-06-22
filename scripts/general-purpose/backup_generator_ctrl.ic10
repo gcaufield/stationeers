@@ -14,4 +14,3 @@ brgt r0 0.10 2
 l r1 Demand PowerRequired
 s RequestMemory Setting r1
 j start
-

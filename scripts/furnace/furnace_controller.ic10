@@ -13,7 +13,7 @@ alias State    r9
 alias LookupOffset r8
 define STATE_IDLE 0
 define STATE_LOADING 1
-define STATE_RUNNING 2 
+define STATE_RUNNING 2
 define STATE_COMPLETE 3
 
 s Furnace SettingInput 100

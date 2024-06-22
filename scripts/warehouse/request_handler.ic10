@@ -14,7 +14,7 @@ sleep 2
 sb VendingMachine RequestHash 0
 lb r1 VendingMachine ExportCount Sum
 sb VendingMachine ClearMemory 1
-seqz r1 r1 
+seqz r1 r1
 sub r1 -1 r1 # Set -2 if no export
 s db Setting r1
 j start

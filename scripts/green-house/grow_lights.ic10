@@ -6,5 +6,5 @@ start:
 yield
 l r0 SolarSensor SolarAngle
 slt r0 r0 112.5
-sb GROWLIGHT On r0 
+sb GROWLIGHT On r0
 j start

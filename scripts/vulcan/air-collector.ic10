@@ -22,7 +22,7 @@ j start
 
 sub r14 r14 MaxDelta # Remove the Maximum Delta From the current Tank Temp
 
-slt r14 r14 r13 
+slt r14 r14 r13
 sgt r12 r12 MinTankPressure
 and r14 r14 r12 # Outside is colder and we are above Min pressure we should dump gas
 breqz r9 4

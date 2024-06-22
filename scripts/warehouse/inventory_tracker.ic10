@@ -42,7 +42,7 @@ mul r0 r0 2 # sizeof entry
 
 # ore = ORE_LIST[dial]
 move sp ORE_LIST
-sub sp ORE_LIST r0 
+sub sp ORE_LIST r0
 pop r1 # Store Hash
 pop r2 # Ore Hash
 

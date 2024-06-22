@@ -36,7 +36,7 @@ yield
 move sp ListEnd
 
 loop:
-pop Set 
+pop Set
 
 jal check_device
 

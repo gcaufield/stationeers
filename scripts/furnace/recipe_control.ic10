@@ -93,7 +93,7 @@ j start
 CheckSorter:
 bdns Sorter ra # Noting to do if there is no sorter.
 l r1 Sorter Output
-bne r1 -1 ra # Sorter isn't ready 
+bne r1 -1 ra # Sorter isn't ready
 ls r1 Sorter 0 Occupied
 beqz r1 ra # Nothing in the sorter
 seq r1 State STATE_WAIT # We only forward to the furnace in the Wait State.
@@ -109,6 +109,6 @@ s RequestMem Setting r0
 yield
 l r1 RequestMem Setting # Wait for Ack from Warehouse
 breq r0 r1 -2
-sne r0 r1 -1 
+sne r0 r1 -1
 s RequestMem Setting 0
 j ra

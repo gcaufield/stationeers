@@ -28,7 +28,7 @@ or r0 r1 r0
 
 # If out of range turn on both vents (they'll figure it out)
 s InputVent On r0
-s OutputVent On r0 
+s OutputVent On r0
 
 
 l r15 GasSensor RatioCarbonDioxide
